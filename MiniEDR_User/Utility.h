@@ -16,7 +16,7 @@ namespace Utility
     // 현재 실행 중인 프로세스의 정보를 process map에 추가함
     void get_current_process_info(std::unordered_map<DWORD, std::tuple<std::wstring, std::wstring, int>>& process_map);
 
-    // 로그 파일에 기록하려는 PID 관련 정보가 있다면 관련 정보를 함께, 없다면 PID만 로깅
+    // 기록하려는 PID 관련 정보가 있다면 관련 정보를 함께, 없다면 PID만 로깅
     void log_process_info(
         std::wofstream& log_file,
         std::unordered_map<DWORD, std::tuple<std::wstring, std::wstring, int>>& process_map,

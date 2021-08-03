@@ -82,7 +82,7 @@ void Utility::get_current_process_info(std::unordered_map<DWORD, std::tuple<std:
     CloseHandle(process_snapshot);
 }
 
-// 로그 파일에 기록하려는 PID 관련 정보가 있다면 관련 정보를 함께, 없다면 PID만 로깅
+// 기록하려는 PID 관련 정보가 있다면 관련 정보를 함께, 없다면 PID만 로깅
 void Utility::log_process_info(
     std::wofstream& log_file,
     std::unordered_map<DWORD, std::tuple<std::wstring, std::wstring, int>>& process_map,
