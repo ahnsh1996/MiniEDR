@@ -253,11 +253,12 @@ ProcessNotifyRoutine(
 
             Msg->Event = ProcessCreate;
 #pragma warning(push)
-#pragma warning(disable:4311)
+#pragma warning(disable:4311) // pointer truncation warning
             Msg->PID = (DWORD)ProcessId;
             Msg->PPID = (DWORD)CreateInfo->ParentProcessId;
 #pragma warning(pop)
 
+            // 메시지에 프로세스 이미지 이름, 커맨드 라인 저장
             Status = RtlStringCbCopyUnicodeString(Msg->StrContents_1, MAX_BUFFER_SIZE, CreateInfo->ImageFileName);
             CheckErrorLeave(Status, L"ProcessNotifyRoutine, RtlStringCbCopyUnicodeString error");
 
@@ -310,7 +311,7 @@ ThreadNotifyRoutine(
     {
         Msg->Event = ThreadCreate;
 #pragma warning(push)
-#pragma warning(disable:4311)
+#pragma warning(disable:4311) // pointer truncation warning
         Msg->PID = (DWORD)PsGetCurrentProcessId(); // SrcPID
         Msg->ThreadId = (DWORD)ThreadId;
         Msg->DstPID = (DWORD)ProcessId;
@@ -373,10 +374,11 @@ FileNotifyRoutine(
 
             Msg->Event = FileCreate;
 #pragma warning(push)
-#pragma warning(disable:4311)
+#pragma warning(disable:4311) // pointer truncation warning
             Msg->PID = (DWORD)ProcessId;
 #pragma warning(pop)
 
+            // 메시지에 생성된 파일 정보 저장
             Status = RtlStringCbCopyUnicodeString(Msg->StrContents_1, MAX_BUFFER_SIZE, &DosName);
             CheckErrorLeave(Status, L"FileNotifyRoutine, RtlStringCbCopyUnicodeString error");
             Status = RtlStringCbCatNW(Msg->StrContents_1, MAX_BUFFER_SIZE, FileName->Buffer, FileName->Length);
@@ -502,16 +504,16 @@ RegistryNotifyRoutine(
         // 레지스트리 연산 별 처리
         switch (NotifyClass)
         {
-        case RegNtPostCreateKeyEx:
+        case RegNtPostCreateKeyEx: // 생성된 키 정보 전달
             Msg->Event = RegistryCreateKey;
             break;
 
-        case RegNtPreDeleteKey:
+        case RegNtPreDeleteKey: // 삭제된 키 정보 전달
             Msg->Event = RegistryPreDeleteKey;
             Msg->RegistryKey = KeyObject;
             break;
 
-        case RegNtPostDeleteKey:
+        case RegNtPostDeleteKey: // 키 삭제 성공 여부 전달
             Msg->Event = RegistryPostDeleteKey;
             Msg->RegistryKey = KeyObject;
             
@@ -519,7 +521,7 @@ RegistryNotifyRoutine(
             CheckErrorLeave(Status, L"RegistryNotifyRoutine, RtlStringCbCatW error");
             break;
 
-        case RegNtPostDeleteValueKey:
+        case RegNtPostDeleteValueKey: // 값 삭제 정보 전달
             Msg->Event = RegistryDeleteValueKey;
             
             PUNICODE_STRING ValueName = ((PREG_DELETE_VALUE_KEY_INFORMATION)PostInfo->PreInformation)->ValueName;
@@ -529,7 +531,7 @@ RegistryNotifyRoutine(
             CheckErrorLeave(Status, L"RegistryNotifyRoutine, RtlStringCbCatNW error");
             break;
             
-        case RegNtPostSetValueKey:
+        case RegNtPostSetValueKey: // 값 설정 정보 전달
             Msg->Event = RegistrySetValueKey;
             UNICODE_STRING Data;
             WCHAR DataBuffer[40];
@@ -584,7 +586,7 @@ RegistryNotifyRoutine(
             break;
         }
 #pragma warning(push)
-#pragma warning(disable:4311)
+#pragma warning(disable:4311) // pointer truncation warning
         Msg->PID = (DWORD)ProcessId;
 #pragma warning(pop)
         SendMessage(Msg);
